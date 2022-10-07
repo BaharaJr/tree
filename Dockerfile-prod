@@ -26,9 +26,8 @@ ENV NODE_ENV production
 RUN apk add --no-cache tzdata
 ENV TZ Africa/Dar_es_Salaam
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN mkdir /home/app
-WORKDIR /home/app
+RUN mkdir /tree
+WORKDIR /tree
 RUN apk add --update --no-cache zip curl
 COPY --from=dependencies /home/app/dist/ ./
 COPY --from=dependencies /home/app/node_modules ./node_modules
-CMD node main
