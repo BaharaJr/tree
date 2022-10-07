@@ -13,7 +13,30 @@ export class HttpErrorFilter implements ExceptionFilter {
     const request = context.getRequest();
     const response = context.getResponse();
     let message: string;
+    message = this.getMessage(exception);
+    message = this.sanitizeMessage(message);
+    Logger.error(message, `${request?.method} ${request?.url}`, 'HTTP ERROR');
+    if (response) {
+      return response
+        .status(exception?.response?.statusCode || HttpStatus.BAD_REQUEST)
+        .send({ error: message });
+    }
+    return new Error(message);
+  }
+
+  private sanitizeMessage = (message: string): string => {
+    let text = message;
+    console.log(message);
+    message.includes('person with firstname, "parentId"')
+      ? (text = 'This child on this parent has already been added')
+      : null;
+    return text;
+  };
+
+  private getMessage = (exception: any) => {
+    let message: string;
     const detail = exception.detail;
+
     if (typeof detail === 'string' && detail?.includes('already exists')) {
       message = exception.table.split('_').join(' ') + ' with';
       message = exception.detail.replace('Key', message);
@@ -34,13 +57,6 @@ export class HttpErrorFilter implements ExceptionFilter {
     ) {
       message = 'Oops 😢! Route not available.';
     }
-
-    Logger.error(message, `${request?.method} ${request?.url}`, 'HTTP ERROR');
-    if (response) {
-      return response
-        .status(exception?.response?.statusCode || HttpStatus.BAD_REQUEST)
-        .send({ error: message });
-    }
-    return new Error(message);
-  }
+    return message;
+  };
 }
