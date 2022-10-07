@@ -1,10 +1,17 @@
-import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common';
 
 @Catch()
 export class HttpErrorFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const context = host.switchToHttp();
     const request = context.getRequest();
+    const response = context.getResponse();
     let message: string;
     const detail = exception.detail;
     if (typeof detail === 'string' && detail?.includes('already exists')) {
@@ -28,7 +35,12 @@ export class HttpErrorFilter implements ExceptionFilter {
       message = 'Oops 😢! Route not available.';
     }
 
-    Logger.error(message, `${request?.method} ${request?.url}`, 'Exception');
+    Logger.error(message, `${request?.method} ${request?.url}`, 'HTTP ERROR');
+    if (response) {
+      return response
+        .status(exception?.response?.statusCode || HttpStatus.BAD_REQUEST)
+        .send({ error: message });
+    }
     return new Error(message);
   }
 }
