@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'fs';
-import jszip from 'jszip';
+import * as jszip from 'jszip';
 import { systemConfig } from './core/system/system.config';
 import { FileInterface } from './shared/interfaces/file.interface';
 
