@@ -26,9 +26,10 @@ export class HttpErrorFilter implements ExceptionFilter {
 
   private sanitizeMessage = (message: string): string => {
     let text = message;
-    console.log(message);
     message.includes('person with firstname, "parentId"')
       ? (text = 'This child on this parent has already been added')
+      : message.includes('Could not find any entity of type "Person" matching')
+      ? (text = 'Family member could not be found')
       : null;
     return text;
   };

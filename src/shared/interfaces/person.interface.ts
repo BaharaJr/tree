@@ -29,6 +29,22 @@ export class PersonInput {
   @IsNotEmpty({ message: 'Parent can not be empty' })
   parent: Parent;
 }
+export class PersonUpdate {
+  id?: string;
+
+  firstName?: string;
+
+  middleName?: string;
+
+  lastName?: string;
+
+  @IsIn(['Male', 'Female'])
+  gender?: 'Male' | 'Female';
+
+  children?: Parent[];
+
+  parent?: Parent;
+}
 
 export interface FamiliesResponse {
   families: PersonInput[];

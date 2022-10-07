@@ -61,8 +61,6 @@ export class Person extends BaseEntity {
           id: '9b2133c8-1f61-4ab3-b17a-48d7656d6c15',
         });
       }
-    } catch (e) {
-      console.log(e.message);
-    }
+    } catch (e) {}
   };
 }
