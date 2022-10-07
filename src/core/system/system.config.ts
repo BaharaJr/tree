@@ -1,10 +1,12 @@
 import { existsSync, mkdirSync } from 'fs';
+import { Person } from '../../modules/person/entities/person.entity';
 const home = process.env.TREE_HOME || './artifacts';
 export const system = () => {
   if (!existsSync(home)) {
     mkdirSync(home);
     mkdirSync(`${home}/dp`);
   }
+  Person.createTree();
 };
 
 export const dbConfig = {

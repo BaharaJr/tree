@@ -1,4 +1,5 @@
 import {
+  BaseEntity,
   Column,
   Entity,
   Index,
@@ -19,7 +20,7 @@ import {
   ['firstName', 'middleName', 'lastName', 'parent'],
   { unique: true },
 )
-export class Person {
+export class Person extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -40,4 +41,28 @@ export class Person {
 
   @TreeParent()
   parent: Person;
+
+  @Column({ default: () => 'LOCALTIMESTAMP' })
+  created: Date;
+
+  @Column({ default: () => 'LOCALTIMESTAMP', name: 'lastupdated' })
+  lastUpdated: Date;
+
+  static createTree = async () => {
+    try {
+      const ancestor = await Person.findOne({
+        where: { id: '9b2133c8-1f61-4ab3-b17a-48d7656d6c15' },
+      });
+      if (!ancestor) {
+        await Person.save({
+          firstName: 'Mangi',
+          lastName: 'Rindi',
+          gender: 'Male',
+          id: '9b2133c8-1f61-4ab3-b17a-48d7656d6c15',
+        });
+      }
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
 }
