@@ -1,0 +1,39 @@
+version: '3.2'
+
+services:
+  tree-db:
+    build:
+      context: .
+      dockerfile: Dockerfile-postgres
+    env_file:
+      - .tree.env
+    restart: always
+    volumes:
+      - postdb-data:/var/lib/postgresql/data
+  api:
+    image: tree/api
+    container_name: tree-api
+    env_file:
+      - .tree.env
+    build: .
+    restart: always
+    depends_on:
+      - tree-db
+    command: npm run start:dev
+    ports:
+      - 3004:3004
+    healthcheck:
+      test: curl -H http://localhost:3004 || exit 1
+      interval: 30s
+      timeout: 30s
+    volumes:
+      - ./src:/home/app/src
+      - ./files:/home/app/files
+volumes:
+  postdb-data:
+    driver: local
+
+networks:
+  default:
+    external:
+      name: local-docker-network
