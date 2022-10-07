@@ -5,6 +5,8 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import { existsSync } from 'fs';
+import { systemConfig } from '../system/system.config';
 
 @Catch()
 export class HttpErrorFilter implements ExceptionFilter {
@@ -13,14 +15,18 @@ export class HttpErrorFilter implements ExceptionFilter {
     const request = context.getRequest();
     const response = context.getResponse();
     let message: string;
-    message = this.getMessage(exception);
-    message = this.sanitizeMessage(message);
-    Logger.error(message, `${request?.method} ${request?.url}`, 'HTTP ERROR');
+    if (response && existsSync(`${systemConfig.FRONTEND}/${request?.url}`)) {
+      return response.sendFile(request?.url, { root: systemConfig.FRONTEND });
+    }
+
     if (response) {
       return response
         .status(exception?.response?.statusCode || HttpStatus.BAD_REQUEST)
         .send({ error: message });
     }
+    Logger.error(message, `${request?.method} ${request?.url}`, 'HTTP ERROR');
+    message = this.getMessage(exception);
+    message = this.sanitizeMessage(message);
     return new Error(message);
   }
 

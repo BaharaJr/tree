@@ -1,14 +1,25 @@
 import { existsSync, mkdirSync } from 'fs';
 import { Person } from '../../modules/person/entities/person.entity';
 const home = process.env.TREE_HOME || './artifacts';
+const FRONTEND = `${home}/app`;
+const TMP = `${home}/tmp`;
+
 export const system = () => {
   if (!existsSync(home)) {
     mkdirSync(home);
     mkdirSync(`${home}/dp`);
+    mkdirSync(FRONTEND);
+    mkdirSync(TMP);
+  }
+  if (!existsSync(FRONTEND)) {
+    mkdirSync(FRONTEND);
+  }
+  if (!existsSync(TMP)) {
+    mkdirSync(TMP);
   }
   Person.createTree();
 };
-
+export const systemConfig = { FRONTEND, TMP };
 export const dbConfig = {
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT) || 5432,
