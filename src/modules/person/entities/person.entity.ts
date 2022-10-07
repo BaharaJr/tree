@@ -45,6 +45,9 @@ export class Person extends BaseEntity {
   @Column({ default: () => 'LOCALTIMESTAMP' })
   created: Date;
 
+  @Column()
+  dob: Date;
+
   @Column({ default: () => 'LOCALTIMESTAMP', name: 'lastupdated' })
   lastUpdated: Date;
 
@@ -58,6 +61,7 @@ export class Person extends BaseEntity {
           firstName: 'Mangi',
           lastName: 'Rindi',
           gender: 'Male',
+          dob: '1800-07-01',
           id: '9b2133c8-1f61-4ab3-b17a-48d7656d6c15',
         });
       }

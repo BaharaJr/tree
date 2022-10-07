@@ -1,0 +1,34 @@
+FROM node:14.16.1-alpine3.12 as dependencies
+RUN apk add curl
+RUN apk add --no-cache --virtual .gyp python3 make gcc g++
+RUN mkdir /home/app
+WORKDIR /home/app
+COPY ["package.json","package-lock.json","tsconfig.json","tsconfig.build.json","./"]
+RUN npm i && apk del .gyp
+COPY ["src","./src"]
+RUN npm run build
+RUN rm -rf node_modules
+RUN npm cache verify
+RUN npm install --only=production
+RUN npm prune --production
+RUN rm -rf node_modules/rxjs/src/
+RUN rm -rf node_modules/rxjs/bundles/
+RUN rm -rf node_modules/rxjs/_esm5/
+RUN rm -rf node_modules/rxjs/_esm2015/
+RUN rm -rf node_modules/swagger-ui-dist/
+RUN rm -rf node_modules/swagger/
+RUN find . -name "*.d.ts" -type f -delete
+RUN find . -name "*.js.map" -type f -delete
+RUN rm -rf node_modules/@types
+
+FROM node:14.17.1-alpine3.12 as release
+ENV NODE_ENV production
+RUN apk add --no-cache tzdata
+ENV TZ Africa/Dar_es_Salaam
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN mkdir /home/app
+WORKDIR /home/app
+RUN apk add --update --no-cache zip curl
+COPY --from=dependencies /home/app/dist/ ./
+COPY --from=dependencies /home/app/node_modules ./node_modules
+CMD node main

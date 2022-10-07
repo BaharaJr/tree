@@ -28,7 +28,7 @@ services:
       timeout: 30s
     volumes:
       - ./src:/home/app/src
-      - ./files:/home/app/files
+      - ./${TREE_HOME}:/home/app/${TREE_HOME}
 volumes:
   postdb-data:
     driver: local
