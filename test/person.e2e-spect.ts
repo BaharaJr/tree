@@ -12,7 +12,7 @@ describe('Person', () => {
 
   it('Registration', async () => {
     return request(server.getHttpServer())
-      .post('api/register')
+      .post('/api/register')
       .send({})
       .expect(200)
       .expect(({ body }) => {
