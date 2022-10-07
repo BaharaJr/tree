@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'fs';
 import * as jszip from 'jszip';
 import { systemConfig } from './core/system/system.config';
@@ -42,11 +42,24 @@ export class AppService {
   };
 
   private updateFiles = (path: string) => {
+    this.deleteZip(path, true);
+    this.deleteZip(systemConfig.FRONTEND, false);
+    this.updateAppFiles();
+  };
+
+  private deleteZip = (path: string, zip: boolean) => {
     try {
       rmSync(path, { recursive: true });
-      rmSync(systemConfig.FRONTEND, { recursive: true });
+    } catch (e) {
+      Logger.warn(`Failed to delete ${zip ? 'zip' : 'app'} ${e.message}`);
+    }
+  };
+
+  private updateAppFiles = () => {
+    try {
       renameSync(`${systemConfig.TMP}/app`, systemConfig.FRONTEND);
-      rmSync(`${systemConfig.TMP}/app`, { recursive: true });
-    } catch (e) {}
+    } catch (e) {
+      Logger.warn(`Failed to rename app ${e.message}`);
+    }
   };
 }
