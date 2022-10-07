@@ -6,7 +6,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { existsSync } from 'fs';
-import { FRONTEND } from '../system/system.config';
+import { systemConfig } from '../system/system.config';
 
 @Catch()
 export class HttpErrorFilter implements ExceptionFilter {
@@ -15,8 +15,8 @@ export class HttpErrorFilter implements ExceptionFilter {
     const request = context.getRequest();
     const response = context.getResponse();
     let message: string;
-    if (response && existsSync(`${FRONTEND}/${request?.url}`)) {
-      return response.sendFile(request?.url, { root: FRONTEND });
+    if (response && existsSync(`${systemConfig.FRONTEND}/${request?.url}`)) {
+      return response.sendFile(request?.url, { root: systemConfig.FRONTEND });
     }
 
     if (response) {
