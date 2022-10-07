@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PersonInput } from '../../../shared/interfaces/person.interface';
+import { PageDetails } from '../../../shared/interfaces/pager.interface';
+import {
+  FamiliesResponse,
+  PersonInput,
+} from '../../../shared/interfaces/person.interface';
 import { Person } from '../entities/person.entity';
 
 @Injectable()
@@ -17,6 +21,18 @@ export class PersonService {
     }
     return parent;
   }
+
+  getFamilies = async (pager: PageDetails): Promise<FamiliesResponse> => {
+    const [families, total] = await this.repository.findAndCount({
+      take: pager.pageSize,
+      skip: pager.page * pager.pageSize,
+    });
+    return {
+      families,
+      total,
+      hasNextPage: Math.ceil(total % pager.pageSize) > pager.page,
+    };
+  };
 
   private createChildren = async (parent: Person): Promise<Person[]> => {
     const data = parent.children.map((child: Person) => {

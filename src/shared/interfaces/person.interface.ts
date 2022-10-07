@@ -29,3 +29,9 @@ export class PersonInput {
   @IsNotEmpty({ message: 'Parent can not be empty' })
   parent: Parent;
 }
+
+export interface FamiliesResponse {
+  families: PersonInput[];
+  total: number;
+  hasNextPage: boolean;
+}
