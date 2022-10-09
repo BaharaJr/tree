@@ -16,11 +16,21 @@ export class PersonService {
   ) {}
 
   create = async (person: PersonInput): Promise<Person> => {
-    const parent = await this.repository.save(person);
-    if (person.children.length > 0 && parent.gender === 'Male') {
-      parent.children = await this.createChildren(parent);
+    const parent = await this.repository.findOne({
+      where: { id: person.parent.id },
+    });
+    if (parent.gender === 'Female') {
+      throw new Error('A female parent can not have descendants');
     }
-    return parent;
+    return await this.createPerson(person);
+  };
+
+  createPerson = async (person: PersonInput): Promise<Person> => {
+    const createdPerson = await this.repository.save(person);
+    if (person.children.length > 0 && createdPerson.gender === 'Male') {
+      createdPerson.children = await this.createChildren(createdPerson);
+    }
+    return createdPerson;
   };
 
   update = async (person: PersonUpdate): Promise<Person> => {
